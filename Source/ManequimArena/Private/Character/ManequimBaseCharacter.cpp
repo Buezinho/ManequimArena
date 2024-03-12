@@ -20,6 +20,10 @@ AManequimBaseCharacter::AManequimBaseCharacter()
 
 }
 
+/// <summary>
+/// As our Base Character implements IAbilitySystemInterface, we have to implement this function
+/// </summary>
+/// <returns></returns>
 UAbilitySystemComponent* AManequimBaseCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -31,6 +35,10 @@ void AManequimBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	
+}
+
+void AManequimBaseCharacter::InitAbilityActorInfo()
+{
 }
 
 

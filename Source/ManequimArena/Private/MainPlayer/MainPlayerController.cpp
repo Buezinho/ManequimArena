@@ -3,8 +3,8 @@
 #include "MainPlayer/MainPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "../../../../../../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/InputTriggers.h"
-#include "../../../../../../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
+#include "InputTriggers.h"
+#include "EnhancedInputComponent.h"
 #include <Interaction/InteractableInterface.h>
 
 AMainPlayerController::AMainPlayerController()
@@ -21,6 +21,9 @@ void AMainPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 }
 
+/// <summary>
+/// Get the trace under the cursor
+/// </summary>
 void AMainPlayerController::CursorTrace()
 {
 	FHitResult cursorHit;
@@ -97,9 +100,13 @@ void AMainPlayerController::BeginPlay()
 	//This is what we add and remove inputs from our players
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 
-	check(Subsystem);
-	Subsystem->AddMappingContext(PlayerInputContext, 0);
-
+	//Instead of check subsystem, we need to assert. This is because only the Hosting players will have access to all subsystems, so this can crash our game!!!
+	//check(Subsystem);
+	//This will work on multiplayer
+	if (Subsystem)
+	{
+		Subsystem->AddMappingContext(PlayerInputContext, 0);
+	}
 	//Set the mouse cursor on begin play
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;

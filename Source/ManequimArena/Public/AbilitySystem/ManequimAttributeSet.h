@@ -7,11 +7,47 @@
 #include "AbilitySystemComponent.h"
 #include "ManequimAttributeSet.generated.h"
 
+//struct FOnAttributeChangeData;
+
+//struct FGameplayEffectModCallbackData;
+//class FGameplayEffectModCallbackData;
+
+
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
  	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
  	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
  	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
  	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
+
+USTRUCT()
+struct FEffectProperties
+{
+	GENERATED_BODY()
+
+	FEffectProperties() {}
+
+	FGameplayEffectContextHandle EffectContextHandle;
+
+	//Source Properties
+	UPROPERTY()
+	AActor* SourceAvatarActor = nullptr;
+	UPROPERTY()
+	AController* SourceController = nullptr;
+	UPROPERTY()
+	ACharacter* SourceCharacter = nullptr;
+	UPROPERTY()
+	UAbilitySystemComponent* SourceASC = nullptr;
+
+	//Target Properties
+	UPROPERTY()
+	AActor* TargetAvatarActor = nullptr;
+	UPROPERTY()
+	AController* TargetController = nullptr;
+	UPROPERTY()
+	ACharacter* TargetCharacter = nullptr;
+	UPROPERTY()
+	UAbilitySystemComponent* TargetASC = nullptr;
+};
 
 /**
  * 
@@ -26,6 +62,10 @@ public:
 	//Required for replication
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
 	
 	//Attributes must have an UPROPERTY()
 	//Attributes must be Replicated
@@ -34,7 +74,7 @@ public:
 	//i.e. UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_*AttributeName*)
 	//Register the notification type on GetLifetimeReplicatedProps for each variable
 
-	//Attributes declaration
+	//Attributes declaration. All Attributes are of type FGameplayAttributeData
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
 
@@ -68,5 +108,8 @@ public:
 	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Mana);
 	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxMana);
 
-	
+protected:
+
+private:
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const;
 };

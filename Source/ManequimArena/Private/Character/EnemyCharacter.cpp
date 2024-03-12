@@ -24,9 +24,15 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitAbilityActorInfo();
+}
 
+void AEnemyCharacter::InitAbilityActorInfo()
+{
 	GetAbilitySystemComponent()->InitAbilityActorInfo(this, this);
 
+	//We need to inform our class that we initialized the Actor Info, so we can bind our Delegates
+	Cast<UManequimAbilitySystemComponent>(GetAbilitySystemComponent())->AbilityActorInfoSet();
 }
 
 void AEnemyCharacter::HighLightActor()

@@ -44,6 +44,8 @@ private:
 	void CursorTrace();
 
 	//Create pointers for last and current interactables, so we cal call properly highlight and unHighlight
+	//TObjectPtr<IInteractableInterface> LastActor;
+	//TObjectPtr<IInteractableInterface> CurrentActor;
 	IInteractableInterface* LastActor;
 	IInteractableInterface* CurrentActor;
 	

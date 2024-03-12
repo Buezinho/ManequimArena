@@ -29,6 +29,7 @@ void ATestEffectActor::OnOverlap(UPrimitiveComponent* OverlapComponent, AActor* 
 		const UManequimAttributeSet* AttributeSet = Cast<UManequimAttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UManequimAttributeSet::StaticClass()));
 		UManequimAttributeSet* MutableAttributeSet = const_cast<UManequimAttributeSet*>(AttributeSet);
 		MutableAttributeSet->SetHealth(AttributeSet->GetHealth() + 25.f);
+		MutableAttributeSet->SetMana(AttributeSet->GetMana() - 15.f);
 		Destroy();
 	}
 }
