@@ -20,6 +20,16 @@ AEnemyCharacter::AEnemyCharacter()
 	AttributeSet = CreateDefaultSubobject<UManequimAttributeSet>("AttributeSet");
 }
 
+/// <summary>
+/// Implementation of ICombatInterface GetPlayerLevel function.
+/// Returns the Enemy Level from the Level variable
+/// </summary>
+/// <returns></returns>
+int32 AEnemyCharacter::GetPlayerLevel()
+{
+	return Level;
+}
+
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();

@@ -10,21 +10,48 @@
 UManequimAttributeSet::UManequimAttributeSet()
 {
 	InitHealth(50.f);
-	InitMaxHealth(120.f);
 	InitMana(50.f);
-	InitMaxMana(80.f);
 
 }
 
 void UManequimAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	//In here we register variables for replication
 	//COND_None = Replicate always / REPNOTIFY_Aways = always notify changes
 	//For our simple game this will sufice
-	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, Health, COND_None, REPNOTIFY_Always);
+
+	/*
+	 *  Primary Attributes Lifetime Notify Implementation
+	 */
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, STR, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, INT, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, RES, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, VIG, COND_None, REPNOTIFY_Always);
+
+	/*
+	 *  Secondary Attributes Lifetime Notify Implementation
+	 */
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, CriticalHitChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, CriticalHitDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, CriticalHitResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+
+	/*
+	 *  Vital Attributes Lifetime Notify Implementation
+	 */
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, Health, COND_None, REPNOTIFY_Always);	
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, Mana, COND_None, REPNOTIFY_Always);
+	
 }
 
 void UManequimAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -36,19 +63,12 @@ void UManequimAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 		NewValue = FMath::Clamp(NewValue, 0, GetMaxHealth());
 		/*UE_LOG(LogTemp, Warning, TEXT("Health: %f"), NewValue);*/
 	}
-	//if (Attribute == GetMaxHealthAttribute())
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Max Health: %f"), NewValue);
-	//}
+
 	if (Attribute == GetManaAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0, GetMaxMana());
 		/*UE_LOG(LogTemp, Warning, TEXT("Mana: %f"), NewValue);*/
 	}
-	//if (Attribute == GetMaxManaAttribute())
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Max Mana: %f"), NewValue);
-	//}
 }
 
 /// <summary>
@@ -105,31 +125,109 @@ void UManequimAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCa
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Health form GetHealth(): %f"), GetHealth());
-		UE_LOG(LogTemp, Warning, TEXT("Magnitude from Data.EvaluatedData.Magnitude: %f"), Data.EvaluatedData.Magnitude);
-
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 	}
 }
 
-void UManequimAttributeSet::OnRep_Health(const FGameplayAttributeData OldHealth) const
+/*
+ *  Primary Attributes Rep Notify Implementation
+ */
+
+void UManequimAttributeSet::OnRep_STR(const FGameplayAttributeData OldSTR) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, STR, OldSTR);
+}
+
+void UManequimAttributeSet::OnRep_INT(const FGameplayAttributeData OldINT) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, INT, OldINT);
+}
+
+void UManequimAttributeSet::OnRep_RES(const FGameplayAttributeData OldRES) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, RES, OldRES);
+}
+
+void UManequimAttributeSet::OnRep_VIG(const FGameplayAttributeData OldVIG) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, VIG, OldVIG);
+}
+
+/*
+ *  Secondary Attributes Rep Notify Implementation
+ */
+
+void UManequimAttributeSet::OnRep_Armor(const FGameplayAttributeData OldArmor) const
 {
 	//We have to inform the Ability System that this attribute has changed 
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, Health, OldHealth);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, Armor, OldArmor);
+}
+void UManequimAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData OldArmorPenetration) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, ArmorPenetration, OldArmorPenetration);
+}
+void UManequimAttributeSet::OnRep_BlockChance(const FGameplayAttributeData OldBlockChance) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, BlockChance, OldBlockChance);
+}
+void UManequimAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData OldCriticalHitChance) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, CriticalHitChance, OldCriticalHitChance);
+}
+void UManequimAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData OldCriticalHitDamage) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, CriticalHitDamage, OldCriticalHitDamage);
+}
+void UManequimAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData OldCriticalHitResistance) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, CriticalHitResistance, OldCriticalHitResistance);
+}
+void UManequimAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData OldHealthRegeneration) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, HealthRegeneration, OldHealthRegeneration);
+}
+void UManequimAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData OldManaRegeneration) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, ManaRegeneration, OldManaRegeneration);
 }
 void UManequimAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData OldMaxHealth) const
 {
 	//We have to inform the Ability System that this attribute has changed 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, MaxHealth, OldMaxHealth);
 }
-void UManequimAttributeSet::OnRep_Mana(const FGameplayAttributeData OldMana) const
-{
-	//We have to inform the Ability System that this attribute has changed 
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, Mana, OldMana);
-}
 void UManequimAttributeSet::OnRep_MaxMana(const FGameplayAttributeData OldMaxMana) const
 {
 	//We have to inform the Ability System that this attribute has changed 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, MaxMana, OldMaxMana);
 }
+
+
+/*
+ *  Vital Attributes Rep Notify Implementation
+ */
+
+void UManequimAttributeSet::OnRep_Health(const FGameplayAttributeData OldHealth) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, Health, OldHealth);
+}
+
+void UManequimAttributeSet::OnRep_Mana(const FGameplayAttributeData OldMana) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, Mana, OldMana);
+}
+
 
 

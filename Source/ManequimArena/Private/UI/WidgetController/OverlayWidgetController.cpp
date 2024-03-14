@@ -26,16 +26,34 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	//This Binds our local HealthChanged function to the delegate from AbilitySystemComponent for when the Health Attribute changes
 	//AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetHealthAttribute()).AddUObject(this, &UOverlayWidgetController::HealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxHealthAttribute()).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetManaAttribute()).AddUObject(this, &UOverlayWidgetController::ManaChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
+	//AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxHealthAttribute()).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
+	//AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetManaAttribute()).AddUObject(this, &UOverlayWidgetController::ManaChanged);
+	//AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
 	/*******  WE WILL REPLACE THE TRADITIONAL DELEGATE CALLBACKS WITH LAMBDA. THEY ARE SIMPLE ENOUGH TO DO SO... NOT GETTING RID OF THE ORIGINAL CODE  *******/
-	/*AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetHealthAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) 
 		{
 			OnHealthChange.Broadcast(Data.NewValue);
 		}
-	);*/
+	);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxHealthChange.Broadcast(Data.NewValue);
+		}
+	);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetManaAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnManaChange.Broadcast(Data.NewValue);
+		}
+	);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxManaAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxManaChange.Broadcast(Data.NewValue);
+		}
+	);
 
 	//Bind our Tags
 	//Lambda Functions are generic functions that are handfull when we don't want to create a specific function for that
@@ -63,34 +81,4 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
-}
-
-void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
-{
-	//When an attribute changes, we listen using this *Attribute*Changed function, and we need to broadcast to our widgets.
-	// Our Widgets already listen to our broadcast...
-	//Remember that this is the Widget Controller, so it's main function is to listen from the models, and inform the changes to the views
-	//OnHealthChange.Broadcast(Data.NewValue);
-
-}
-
-void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-{
-	//When an attribute changes, we listen using this *Attribute*Changed function, and we need to broadcast to our widgets
-	//Remember that this is the Widget Controller, so it's main function is to listen from the models, and inform the changes to the views
-	OnMaxHealthChange.Broadcast(Data.NewValue);
-}
-
-void UOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& Data) const
-{
-	//When an attribute changes, we listen using this *Attribute*Changed function, and we need to broadcast to our widgets
-	//Remember that this is the Widget Controller, so it's main function is to listen from the models, and inform the changes to the views
-	OnManaChange.Broadcast(Data.NewValue);
-}
-
-void UOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data) const
-{
-	//When an attribute changes, we listen using this *Attribute*Changed function, and we need to broadcast to our widgets
-	//Remember that this is the Widget Controller, so it's main function is to listen from the models, and inform the changes to the views
-	OnMaxManaChange.Broadcast(Data.NewValue);
 }

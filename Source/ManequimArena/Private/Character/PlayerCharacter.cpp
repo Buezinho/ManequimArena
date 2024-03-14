@@ -45,6 +45,18 @@ void APlayerCharacter::OnRep_PlayerState()
 	// Init ability actor info for the client
 	InitAbilityActorInfo();
 }
+/// <summary>
+/// Implementation of ICombatInterface GetPlayerLevel function.
+/// Returns the player level from the player state
+/// </summary>
+/// <returns></returns>
+int32 APlayerCharacter::GetPlayerLevel()
+{
+	AMainPlayerState* MainPlayerState = GetPlayerState<AMainPlayerState>();
+	check(MainPlayerState);
+
+	return MainPlayerState->GetPlayerLevel();
+}
 
 void APlayerCharacter::InitAbilityActorInfo()
 {
@@ -72,4 +84,7 @@ void APlayerCharacter::InitAbilityActorInfo()
 		}
 	}
 
+	//After initiate our ASC, AS and HUD, we can initialize our Default attributes
+	//As this is the server side, we only need to initialize it over here... the Player state will be replicated these values as soon as we change it
+	InitializeDefaultAttributes();
 }

@@ -35,11 +35,8 @@ class UManequimUserWidget;
 
 
 //We need some Dynamic Multicast delegates
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangedSignature, float, NewMana);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangedSignature, float, NewMaxMana);
-
+//But we don't need 1 delegate for each attribute. Instead, we need 1 delagate for each type of data being broadcasted
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 
 
@@ -57,18 +54,18 @@ public:
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
-	
+	//Widgets will now listen to our Signatures through Lambda Functions instead of actual functions like HealthChanged
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
-	FOnHealthChangedSignature OnHealthChange;
+	FOnAttributeChangedSignature OnHealthChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FOnMaxHealthChangedSignature OnMaxHealthChange;
+	FOnAttributeChangedSignature OnMaxHealthChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FOnManaChangedSignature OnManaChange;
+	FOnAttributeChangedSignature OnManaChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FOnMaxManaChangedSignature OnMaxManaChange;
+	FOnAttributeChangedSignature OnMaxManaChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Message")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
@@ -77,11 +74,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
-
-	void HealthChanged(const FOnAttributeChangeData& Data) const;
-	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
-	void ManaChanged(const FOnAttributeChangeData& Data) const;
-	void MaxManaChanged(const FOnAttributeChangeData& Data) const;
 
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);

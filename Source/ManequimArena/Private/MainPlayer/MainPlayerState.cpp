@@ -4,6 +4,7 @@
 #include "MainPlayer/MainPlayerState.h"
 #include <AbilitySystem/ManequimAttributeSet.h>
 #include <AbilitySystem/ManequimAbilitySystemComponent.h>
+#include "Net/UnrealNetwork.h"
 
 AMainPlayerState::AMainPlayerState()
 {
@@ -20,7 +21,19 @@ AMainPlayerState::AMainPlayerState()
 	NetUpdateFrequency = 100.f;
 }
 
+void AMainPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//Mark as replicated
+	DOREPLIFETIME(AMainPlayerState, Level);
+}
+
 UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AMainPlayerState::OnRep_Level(int32 OldLevel)
+{
 }

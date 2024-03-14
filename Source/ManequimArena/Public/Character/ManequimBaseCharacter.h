@@ -7,13 +7,15 @@
 #include "AbilitySystemInterface.h"
 //#include "AbilitySystem/ManequimAbilitySystemComponent.h"
 //#include "AbilitySystem/ManequimAttributeSet.h"
+#include "Interaction/CombatInterface.h"
 #include "ManequimBaseCharacter.generated.h"
 
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UGameplayEffect;
 
 UCLASS(Abstract)
-class MANEQUIMARENA_API AManequimBaseCharacter : public ACharacter, public IAbilitySystemInterface
+class MANEQUIMARENA_API AManequimBaseCharacter : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -39,4 +41,18 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	//This effect is intended to set (override) all of our primary attributes. It's a nice alternative to initialize attributes
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect>GameplayEffectClass, float Level) const;
+	void InitializeDefaultAttributes() const;
+
 };

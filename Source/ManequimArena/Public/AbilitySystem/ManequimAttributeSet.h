@@ -74,39 +74,153 @@ public:
 	//i.e. UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_*AttributeName*)
 	//Register the notification type on GetLifetimeReplicatedProps for each variable
 
+	/*
+	 *  Primary Attributes Variable Declaration, Getters and Setters
+	 */
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_STR, Category = "Primary Attributes")
+	FGameplayAttributeData STR;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, STR);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_INT, Category = "Primary Attributes")
+	FGameplayAttributeData INT;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, INT);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RES, Category = "Primary Attributes")
+	FGameplayAttributeData RES;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, RES);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_VIG, Category = "Primary Attributes")
+	FGameplayAttributeData VIG;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, VIG);
+
+	/*
+	 *  Secondary Attributes Variable Declaration, Getters and Setters
+	 */
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Secondary Attributes")
+	FGameplayAttributeData Armor;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Armor);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Secondary Attributes")
+	FGameplayAttributeData ArmorPenetration;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, ArmorPenetration);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "Secondary Attributes")
+	FGameplayAttributeData BlockChance;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, BlockChance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitChance, Category = "Secondary Attributes")
+	FGameplayAttributeData CriticalHitChance;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, CriticalHitChance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitDamage, Category = "Secondary Attributes")
+	FGameplayAttributeData CriticalHitDamage;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, CriticalHitDamage);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitResistance, Category = "Secondary Attributes")
+	FGameplayAttributeData CriticalHitResistance;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, CriticalHitResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegeneration, Category = "Secondary Attributes")
+	FGameplayAttributeData HealthRegeneration;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, HealthRegeneration);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Secondary Attributes")
+	FGameplayAttributeData ManaRegeneration;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, ManaRegeneration);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Secondary Attributes")
+	FGameplayAttributeData MaxHealth;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxHealth);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Secondary Attributes")
+	FGameplayAttributeData MaxMana;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxMana);
+
+	/*
+	 *  Vital Attributes Variable Declaration, Getters and Setters
+	 */
+
 	//Attributes declaration. All Attributes are of type FGameplayAttributeData
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Vital Attributes")
-	FGameplayAttributeData MaxHealth;
+	//Create Macros for GETTERS and SETTERS for each attribute
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Health);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Mana);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Vital Attributes")
-	FGameplayAttributeData MaxMana;
-
+	
 	//Attributes Replication Functions declaration
 	//In order to this functions to be notification, we need to add the UFUNCTION tag
 	//OnRep can have either no value or a FGameplayAttributeData that passes the OLD value. This can be important for comparisons and calculations
+	/*
+	 *  Primary Attributes Rep Notify
+	 */
+
 	UFUNCTION()
-	void OnRep_Health(const FGameplayAttributeData OldHealth) const;
+	void OnRep_STR(const FGameplayAttributeData OldSTR) const;
+
+	UFUNCTION()
+	void OnRep_INT(const FGameplayAttributeData OldINT) const;
+
+	UFUNCTION()
+	void OnRep_RES(const FGameplayAttributeData OldRES) const;
+
+	UFUNCTION()
+	void OnRep_VIG(const FGameplayAttributeData OldVIG) const;
+
+	/*
+	 *  Secondary Attributes Rep Notify
+	 */
+
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData OldArmor) const;
+
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData OldArmorPenetration) const;
+
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData OldBlockChance) const;
+
+	UFUNCTION()
+	void OnRep_CriticalHitChance(const FGameplayAttributeData OldCriticalHitChance) const;
+
+	UFUNCTION()
+	void OnRep_CriticalHitDamage(const FGameplayAttributeData OldCriticalHitDamage) const;
+
+	UFUNCTION()
+	void OnRep_CriticalHitResistance(const FGameplayAttributeData OldCriticalHitResistance) const;
+
+	UFUNCTION()
+	void OnRep_HealthRegeneration(const FGameplayAttributeData OldHealthRegeneration) const;
+
+	UFUNCTION()
+	void OnRep_ManaRegeneration(const FGameplayAttributeData OldManaRegeneration) const;
 
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData OldMaxHealth) const;
 
 	UFUNCTION()
-	void OnRep_Mana(const FGameplayAttributeData OldMana) const;
+	void OnRep_MaxMana(const FGameplayAttributeData OldMaxMana) const;
+	/*
+	 *  Vital Attributes Rep Notify
+	 */
+	UFUNCTION()
+	void OnRep_Health(const FGameplayAttributeData OldHealth) const;
+
 
 	UFUNCTION()
-	void OnRep_MaxMana(const FGameplayAttributeData OldMaxMana) const;
+	void OnRep_Mana(const FGameplayAttributeData OldMana) const;
+
 
 	//Create Macros for GETTERS and SETTERS for each attribute
-	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Health);
-	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxHealth);
-	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Mana);
-	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxMana);
+	//ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Health);
+	//ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxHealth);
+	//ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Mana);
+	//ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxMana);
 
 protected:
 
