@@ -6,12 +6,48 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
+#include "ManequimGameplayTags.h"
 
 UManequimAttributeSet::UManequimAttributeSet()
 {
 	InitHealth(50.f);
 	InitMana(50.f);
 
+	//Store our gameplaytags in a local constant
+	const FManequimGameplayTags& GameplayTags = FManequimGameplayTags::Get();
+
+	//Static Bind Delegates are powerfull tools that allows us create a function pointer with specific signature (in our case 0 params returning a FGameplayAttribute)
+	//and assing any kind of Function that matches that signature. This allows us to call it using our newly created pointer as example bellow
+	//FunctionPointer = GetINTAttribute;
+	//FGameplayAttribute a = FunctionPointer();
+
+	// Old --------------------------------------------------------------------
+	//Creates a delegate for our STR attribute and binds it to GetSTRAttribute
+	//FAttributeSignature STRDelegate;
+	//STRDelegate.BindStatic(this->GetSTRAttribute);
+	// TagsToAttributes.Add(GameplayTags.Attributes_Primary_STR, STRDelegate);
+	// New --------------------------------------------------------------------
+	// 
+	//Because we changed our Map from FAttributeSignature to FFuncPtr the can pass our Attribute functions directly
+
+	//Primary Attributes 
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_STR, this->GetSTRAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_INT, this->GetINTAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_RES, this->GetRESAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Primary_VIG, this->GetVIGAttribute);
+
+	//Secondary Attributes 
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_Armor, this->GetArmorAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ArmorPenetration, this->GetArmorPenetrationAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_BlockChance, this->GetBlockChanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitChance, this->GetCriticalHitChanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage, this->GetCriticalHitDamageAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance, this->GetCriticalHitResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_HealthRegeneration, this->GetHealthRegenerationAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, this->GetManaRegenerationAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, this->GetMaxHealthAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, this->GetMaxManaAttribute);
+	
 }
 
 void UManequimAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

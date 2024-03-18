@@ -8,6 +8,7 @@
 
 class UManequimUserWidget;
 class UOverlayWidgetController;
+class UAttributeMenuWidgetController;
 struct FWidgetControllerParams;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -22,10 +23,6 @@ class MANEQUIMARENA_API AManequimHUD : public AHUD
 
 public:
 
-	//Pointer to our single overlay widget
-	UPROPERTY()
-	TObjectPtr<UManequimUserWidget> OverlayWidget;
-
 	//Pointer to our single overlay widget controller
 	//The idea is to make it something like a singleton and guarantee that we only have 1 Overlay Widget Controller at a time
 
@@ -33,18 +30,36 @@ public:
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
+
+	/*void InitAttributeMenu(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);*/
+
 protected:
 
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere)
+
+	//Pointer to our single overlay widget
+	UPROPERTY()
+	TObjectPtr<UManequimUserWidget> OverlayWidget;
+
+	UPROPERTY(EditAnywhere, Category = "WidgetController")
 	TSubclassOf<UManequimUserWidget> OverlayWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "WidgetController")
 	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
+
+	/*UPROPERTY(EditAnywhere, Category = "WidgetController")
+	TSubclassOf<UManequimUserWidget> AttributeMenuWidgetClass;*/
+
+	UPROPERTY()
+	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+
+	UPROPERTY(EditAnywhere, Category = "WidgetController")
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
 	
 };

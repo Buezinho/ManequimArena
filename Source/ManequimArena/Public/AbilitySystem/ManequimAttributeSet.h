@@ -19,6 +19,9 @@
  	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
  	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+//Creates a Delegate that receives 0 arguments and returns an Attribute
+//DECLARE_DELEGATE_RetVal(FGameplayAttribute, FAttributeSignature);
+
 USTRUCT()
 struct FEffectProperties
 {
@@ -49,6 +52,12 @@ struct FEffectProperties
 	UAbilitySystemComponent* TargetASC = nullptr;
 };
 
+
+//typedef is specific to the FGameplayAttribute() signature but Template is more versatile to any signature
+//typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+template<class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 /**
  * 
  */
@@ -65,6 +74,12 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+	//Create a Map that maps a gameplayTag to a delegate function
+	//TBaseStaticDelegateInstance is a generic function that binds to any pointer with a specific signature
+	//In our case the signature receives 0 input params and returns a FGameplayAttribute and assigns it to a pointer
+	//FAttributeFuncPtr is an ALIAS to TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 
 	
 	//Attributes must have an UPROPERTY()

@@ -2,6 +2,7 @@
 
 
 #include "AbilitySystem/ManequimAbilitySystemComponent.h"
+#include "ManequimGameplayTags.h"
 
 void UManequimAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
 {
@@ -25,5 +26,6 @@ void UManequimAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* Abi
 void UManequimAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UManequimAbilitySystemComponent::EffectApplied);
+
 }
 
