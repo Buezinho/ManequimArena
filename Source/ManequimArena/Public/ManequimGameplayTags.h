@@ -42,6 +42,38 @@ public:
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
 
+	//Resistances
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Physical;
+
+	//Input GameplayTags
+	FGameplayTag InputTag_LMB;
+	FGameplayTag InputTag_RMB;
+	FGameplayTag InputTag_MB3;
+	FGameplayTag InputTag_Ability1;
+	FGameplayTag InputTag_Ability2;
+	FGameplayTag InputTag_Ability3;
+	FGameplayTag InputTag_Ability4;
+	FGameplayTag InputTag_AbilityUltimate;
+	FGameplayTag InputTag_BaseAttack;
+	FGameplayTag InputTag_StopAction;
+	FGameplayTag InputTag_CancelAbility;
+
+	//Damage
+	FGameplayTag Damage;
+	FGameplayTag Damage_Fire;
+	FGameplayTag Damage_Lightning;
+	FGameplayTag Damage_Arcane;
+	FGameplayTag Damage_Physical;
+
+	//Map to hold all of all damage types. It will be easier to look for all damage types and it`s resistances
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
+
+	//Effects
+	FGameplayTag Effects_HitReact;
+
 protected:
 
 private:

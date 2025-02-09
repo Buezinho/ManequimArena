@@ -36,6 +36,7 @@ class MANEQUIMARENA_API UAttributeInfo : public UDataAsset
 
 public:
 
+	UFUNCTION(BlueprintCallable)
 	FManequimAttributeInfo FindAttributeInfoForTag(const FGameplayTag& AttributeTag, bool bLogNotFound = false) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

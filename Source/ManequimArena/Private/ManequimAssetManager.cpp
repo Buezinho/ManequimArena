@@ -2,6 +2,7 @@
 
 
 #include "ManequimAssetManager.h"
+#include "AbilitySystemGlobals.h"
 #include "ManequimGameplayTags.h"
 
 UManequimAssetManager& UManequimAssetManager::Get()
@@ -23,4 +24,8 @@ void UManequimAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FManequimGameplayTags::InitializeNativeGameplayTags();
+
+	//This is REQUIRED to use target data
+	//It initializes the TargetDataScriptStructCache
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }

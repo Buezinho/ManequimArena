@@ -39,6 +39,8 @@ void ABaseEffectActor::ApplyEfectToTarget(AActor* TargetActorToApplyEffect, TSub
 		ASCInterface->GetAbilitySystemComponent();		
 	}*/
 
+	if (TargetActorToApplyEffect->ActorHasTag(FName("Enemy")) && !bApplyEffectsToEnemies) return;
+
 	//This Static Library function does exactly the same as we did with the ASCInterface, and returns exactly the same results, so it's a nice shortcut
 	//Also, if our actor doesn't implement the IAbilitySystemInterface, by default it can look for the component in the actor, so it's even nicier!
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActorToApplyEffect);
@@ -68,6 +70,12 @@ void ABaseEffectActor::ApplyEfectToTarget(AActor* TargetActorToApplyEffect, TSub
 		//We only store the FActiveGameplayEffectHandle if we intend to remove it later, so we can check our removal policy before storing it
 		ActiveEffectHandlesMap.Add(ActiveEffectHandle, TargetASC);
 		
+	}
+
+	//Only destroy effect actors that are not infinite!
+	if (bDestroyOnEffectApplication && !bIsInfinite)
+	{
+		Destroy();
 	}
 
 }

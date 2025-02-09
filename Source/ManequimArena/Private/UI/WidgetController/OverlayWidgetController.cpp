@@ -14,10 +14,10 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	//Cast our generic attribute set to our ManequimAttributeSet
 	const UManequimAttributeSet* ManequimAttributeSet = CastChecked<UManequimAttributeSet>(AttributeSet);
 	
-	OnHealthChange.Broadcast(ManequimAttributeSet->GetHealth());
-	OnMaxHealthChange.Broadcast(ManequimAttributeSet->GetMaxHealth());
-	OnManaChange.Broadcast(ManequimAttributeSet->GetMana());
-	OnMaxManaChange.Broadcast(ManequimAttributeSet->GetMaxMana());
+	OnHealthChanged.Broadcast(ManequimAttributeSet->GetHealth());
+	OnMaxHealthChanged.Broadcast(ManequimAttributeSet->GetMaxHealth());
+	OnManaChanged.Broadcast(ManequimAttributeSet->GetMana());
+	OnMaxManaChanged.Broadcast(ManequimAttributeSet->GetMaxMana());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
@@ -33,25 +33,25 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) 
 		{
-			OnHealthChange.Broadcast(Data.NewValue);
+			OnHealthChanged.Broadcast(Data.NewValue);
 		}
 	);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data)
 		{
-			OnMaxHealthChange.Broadcast(Data.NewValue);
+			OnMaxHealthChanged.Broadcast(Data.NewValue);
 		}
 	);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetManaAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data)
 		{
-			OnManaChange.Broadcast(Data.NewValue);
+			OnManaChanged.Broadcast(Data.NewValue);
 		}
 	);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ManequimAttributeSet->GetMaxManaAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data)
 		{
-			OnMaxManaChange.Broadcast(Data.NewValue);
+			OnMaxManaChanged.Broadcast(Data.NewValue);
 		}
 	);
 

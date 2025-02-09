@@ -153,6 +153,22 @@ public:
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, MaxMana);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Secondary Attributes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, FireResistance);
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category = "Secondary Attributes")
+	FGameplayAttributeData LightningResistance;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, LightningResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcaneResistance, Category = "Secondary Attributes")
+	FGameplayAttributeData ArcaneResistance;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, ArcaneResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Secondary Attributes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, PhysicalResistance);
+
 	/*
 	 *  Vital Attributes Variable Declaration, Getters and Setters
 	 */
@@ -166,6 +182,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, Mana);
+
+	/*
+	 *  Meta Attributes Variable Declaration, Getters and Setters
+	 */
+
+	//Meta Attributes are NOT replicated and are used as a staging area to calculate real modifications to attributes on the SERVER
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UManequimAttributeSet, IncomingDamage);
 
 	
 	//Attributes Replication Functions declaration
@@ -219,7 +244,21 @@ public:
 	void OnRep_MaxHealth(const FGameplayAttributeData OldMaxHealth) const;
 
 	UFUNCTION()
-	void OnRep_MaxMana(const FGameplayAttributeData OldMaxMana) const;
+	void OnRep_MaxMana(const FGameplayAttributeData OldMaxMana) const; 
+
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData OldFireResistance) const;
+
+	UFUNCTION()
+	void OnRep_LightningResistance(const FGameplayAttributeData OldLightningResistance) const;
+
+	UFUNCTION()
+	void OnRep_ArcaneResistance(const FGameplayAttributeData OldArcaneResistance) const;
+
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData OldPhysicalResistance) const;
+
+
 	/*
 	 *  Vital Attributes Rep Notify
 	 */
@@ -241,4 +280,6 @@ protected:
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const;
+
+	void ShowFloatingText(const FEffectProperties& Properties, float Damage, bool bBlockedHit, bool bCriticalHit);
 };

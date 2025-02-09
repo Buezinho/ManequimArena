@@ -7,11 +7,15 @@
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 #include "ManequimGameplayTags.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "MainPlayer/MainPlayerController.h"
+#include "AbilitySystem/ManequimAbilitySystemLibrary.h"
 
 UManequimAttributeSet::UManequimAttributeSet()
 {
-	InitHealth(50.f);
-	InitMana(50.f);
+	/*InitHealth(50.f);
+	InitMana(50.f);*/
 
 	//Store our gameplaytags in a local constant
 	const FManequimGameplayTags& GameplayTags = FManequimGameplayTags::Get();
@@ -47,6 +51,10 @@ UManequimAttributeSet::UManequimAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, this->GetManaRegenerationAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, this->GetMaxHealthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, this->GetMaxManaAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Fire, this->GetFireResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Lightning, this->GetLightningResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Arcane, this->GetArcaneResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Physical, this->GetPhysicalResistanceAttribute);
 	
 }
 
@@ -80,6 +88,10 @@ void UManequimAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, LightningResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, ArcaneResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UManequimAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
 
 	/*
 	 *  Vital Attributes Lifetime Notify Implementation
@@ -97,7 +109,7 @@ void UManequimAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0, GetMaxHealth());
-		/*UE_LOG(LogTemp, Warning, TEXT("Health: %f"), NewValue);*/
+		//UE_LOG(LogTemp, Warning, TEXT("Changet Health on %s, Health: %f"), *Props.TargetAvatarActor->GetName(), NewValue);
 	}
 
 	if (Attribute == GetManaAttribute())
@@ -162,10 +174,82 @@ void UManequimAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCa
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+		UE_LOG(LogTemp, Warning, TEXT("Changet Health on %s, Health: %f"), *Properties.TargetAvatarActor->GetName(), GetHealth());
 	}
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
+	}
+
+	/*
+	* --------------------------------------------------------------------------------------------
+	* META ATTRIBUTES POST GAMEPLAY EFFECT HANDLING
+	* --------------------------------------------------------------------------------------------
+	*/
+	//We handle Meta Attributes on the PostGameplayEffect
+	//For Incoming Damage, if it was modified, we need to apply the effect to our health and zero out the Incoming Damage
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetIncomingDamage();
+		SetIncomingDamage(0.f);
+
+		if (LocalIncomingDamage > 0)
+		{
+			//So far, IncomingDamage will be applied directly to our health (just as before), but now using the Meta Attribute staging process
+			const float NewHealth = GetHealth() - LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			//If our Health is equals or less than 0, we can set a local varialbe to use later
+			const bool bFatal = NewHealth <= 0.f;
+
+			if (bFatal)
+			{
+				ICombatInterface* CombatInterface = Cast<ICombatInterface>(Properties.TargetAvatarActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Die();
+				}
+			}
+			else
+			{
+				//TODO: Handle MICROSTUNS in a better way later
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FManequimGameplayTags::Get().Effects_HitReact);
+				Properties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+			
+
+			bool bBlockedHit = UManequimAbilitySystemLibrary::IsBlockedHit(Properties.EffectContextHandle);
+			bool bCriticalHit = UManequimAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
+			ShowFloatingText(Properties, LocalIncomingDamage, bBlockedHit, bCriticalHit);
+		}
+	}
+
+	//--------------------------------------------------------------------------------------------
+}
+
+/// <summary>
+/// Show Floating Text will spawn ou Floating Text Widget, attach it to the Taget, Detach it and then fade
+/// </summary>
+/// <param name="Properties"></param>
+/// <param name="Damage"></param>
+void UManequimAttributeSet::ShowFloatingText(const FEffectProperties& Properties, float Damage, bool bBlockedHit, bool bCriticalHit)
+{
+	//Either if the damage was fatal orr not, we have to spawn the Floating Text for the Damage
+			// We only won't show self damage******* TODO: Maybe later we can show anyway
+			//TODO: implement colors on the damage text
+	if (Properties.SourceCharacter != Properties.TargetCharacter)
+	{
+		//Because ShowFloatingText is being called ONLY when we have the META ATTRIBUTE IncomingDamage, when calling UGameplayStatics we are always returning the server PlayerController
+		// AMainPlayerController* PC = Cast<AMainPlayerController>(UGameplayStatics::GetPlayerController(Properties.SourceCharacter, 0));
+		//Instead we can get the correct controller directly from the SourceCharacter in Properties
+
+		AMainPlayerController* PC = Cast<AMainPlayerController>(Properties.SourceCharacter->Controller);
+		if (PC)
+		{
+			//Show Damage Number will spawn ou Floating Text Widget, attach it to the Taget, Detach it and then fade
+			PC->ShowDamageNumber(Damage, Properties.TargetCharacter, bBlockedHit, bCriticalHit);
+		}
 	}
 }
 
@@ -247,6 +331,26 @@ void UManequimAttributeSet::OnRep_MaxMana(const FGameplayAttributeData OldMaxMan
 	//We have to inform the Ability System that this attribute has changed 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, MaxMana, OldMaxMana);
 }
+void UManequimAttributeSet::OnRep_FireResistance(const FGameplayAttributeData OldFireResistance) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, FireResistance, OldFireResistance);
+}
+void UManequimAttributeSet::OnRep_LightningResistance(const FGameplayAttributeData OldLightningResistance) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, LightningResistance, OldLightningResistance);
+}
+void UManequimAttributeSet::OnRep_ArcaneResistance(const FGameplayAttributeData OldArcaneResistance) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, ArcaneResistance, OldArcaneResistance);
+}
+void UManequimAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData OldPhysicalResistance) const
+{
+	//We have to inform the Ability System that this attribute has changed 
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, PhysicalResistance, OldPhysicalResistance);
+}
 
 
 /*
@@ -264,6 +368,7 @@ void UManequimAttributeSet::OnRep_Mana(const FGameplayAttributeData OldMana) con
 	//We have to inform the Ability System that this attribute has changed 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UManequimAttributeSet, Mana, OldMana);
 }
+
 
 
 

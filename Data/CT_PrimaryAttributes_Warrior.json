@@ -1,0 +1,26 @@
+[
+	{
+		"Name": "Attributes.Primary.INT",
+		"1": 5,
+		"5": 15,
+		"10": 20
+	},
+	{
+		"Name": "Attributes.Primary.STR",
+		"1": 15,
+		"5": 25,
+		"10": 45
+	},
+	{
+		"Name": "Attributes.Primary.RES",
+		"1": 10,
+		"5": 15,
+		"10": 30
+	},
+	{
+		"Name": "Attributes.Primary.VIG",
+		"1": 15,
+		"5": 20,
+		"10": 35
+	}
+]
